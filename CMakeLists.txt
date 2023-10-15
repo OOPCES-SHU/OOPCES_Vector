@@ -7,5 +7,4 @@ include_directories(.)
 
 add_executable(OOPCES_Vector
         main.cpp
-        VectorWrapper.cpp
         VectorWrapper.h)
