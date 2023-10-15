@@ -1,6 +1,3 @@
-//
-// Created by He stu on 2023/10/15.
-//
 
 #ifndef OOPCES_VECTOR_MYVECTOR_H
 #define OOPCES_VECTOR_MYVECTOR_H
