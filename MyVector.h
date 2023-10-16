@@ -1,4 +1,4 @@
-
+//MyVector.h
 #ifndef OOPCES_VECTOR_MYVECTOR_H
 #define OOPCES_VECTOR_MYVECTOR_H
 
@@ -35,8 +35,37 @@ public:
     friend std::istream operator>>(std::istream & in , const MyVector<T> & Vector);
 private:
     T *data; //数据
-    unsigned long long len; //当前长度
-    unsigned long long capacity; //容量
+    unsigned long long len{}; //当前长度
+    unsigned long long capacity{}; //容量
 };
+
+template<typename T> MyVector<T>::MyVector(int _size)
+{
+    len = _size;
+    capacity = _size;
+    data = new T[_size];
+}
+
+template<typename T> MyVector<T>::MyVector(const MyVector<T>& copy)
+{
+    copy = new T[capacity];
+    for(int i=0;i<len;i++)
+    {
+        copy[i] = data[i];
+    }
+}
+
+template<typename T> MyVector<T>::MyVector(int size , const T& initial)
+{
+    len = size;
+    capacity = size;
+    data = new T[size];
+    for(int i=0;i<len;i++)
+    {
+        data[i] = initial;
+    }
+}
+
+template<typename T> MyVector<T>::~MyVector() { delete[] data; }
 
 #endif //OOPCES_VECTOR_MYVECTOR_H
