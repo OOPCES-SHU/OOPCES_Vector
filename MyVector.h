@@ -1,6 +1,7 @@
 //MyVector.h
 #ifndef OOPCES_VECTOR_MYVECTOR_H
 #define OOPCES_VECTOR_MYVECTOR_H
+#include <iostream>
 
 template<typename T>
 class MyVector
@@ -29,7 +30,7 @@ public:
     void pop_back(); // 删除最后一个元素，减少容量
     void insert(unsigned long long index, const T& element); //在index处插入一个元素
     void erase(unsigned long long index); //删除index处的元素
-    void clear(); //清空
+    bool clear(); //清空
     void reverse(unsigned long long _capacity); //改变容量
     T & at(unsigned long long index); //下标
     iterator begin() const; //返回第一个元素的指针
@@ -43,37 +44,50 @@ public:
     T & operator[](unsigned long long index); //下标
 
     typedef iterator iterator;
-    friend std::ostream operator<<(std::ostream & out , const MyVector<T> & Vector);
-    friend std::istream operator>>(std::istream & in , const MyVector<T> & Vector);
+    friend std::istream & operator>>(std::istream & is, MyVector<T> & v); //输入
+    friend std::ostream & operator<<(std::ostream & os, MyVector<T> & v); //输出
 };
 
-template<typename T> MyVector<T>::MyVector(int _size)
-{
-    len = _size;
-    capacity = _size;
-    data = new T[_size];
-}
+template<typename T>
+MyVector<T>::MyVector() //默认构造函数
+:len(0),capacity(5),data(new T[5])
+{}
 
-template<typename T> MyVector<T>::MyVector(const MyVector<T>& copy)
+template<typename T> 
+MyVector<T>::MyVector(int _size) //构造函数
+:len(_size),capacity(_size + 5),data(new T[_size + 5])
+{}
+
+template<typename T>
+MyVector<T>::MyVector(const MyVector<T>& copy) //深拷贝构造函数
+:data(nullptr)
 {
-    copy = new T[capacity];
-    for(int i=0;i<len;i++)
+    len = copy.len;
+    capacity = copy.capacity;
+    data = new T[copy.capacity];
+    for(int i=0 ; i<copy.len ; i++)
     {
-        copy[i] = data[i];
+        data[i] = copy.data[i];
     }
 }
 
-template<typename T> MyVector<T>::MyVector(int size , const T& initial)
+template<typename T>
+MyVector<T>::MyVector(int size , const T& initial) //构造函数,将size个位置初始化为initial
 {
     len = size;
-    capacity = size;
-    data = new T[size];
-    for(int i=0;i<len;i++)
-    {
+    capacity = size + 5;
+    data = new T[size + 5];
+    for(int i=0;i<len;i++){
         data[i] = initial;
     }
 }
 
-template<typename T> MyVector<T>::~MyVector() { delete[] data; }
+template<typename T>
+MyVector<T>::~MyVector() { 
+    if(data!= nullptr){
+        delete[] data; 
+        data = nullptr;
+    }
+}
 
 #endif //OOPCES_VECTOR_MYVECTOR_H
