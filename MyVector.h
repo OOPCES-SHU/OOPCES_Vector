@@ -5,12 +5,24 @@
 template<typename T>
 class MyVector
 {
+private:
+    T *data; //数据
+    unsigned long long len; //当前长度
+    unsigned long long capacity; //容量
+    class iterator{
+        /*
+         *  写 迭代器 写 迭代器
+         *  写 迭代器 写 迭代器
+         *  写 迭代器 写 迭代器
+         *  写 迭代器 写 迭代器
+         * */
+    };
 public:
     MyVector(); //默认构造函数
     MyVector(int _size);
     MyVector(const MyVector<T>& copy); //拷贝构造函数
-    MyVector(int size , const T& initial); //构造函数
 
+    MyVector(int size , const T& initial); //构造函数
     ~MyVector();  //析构函数
     unsigned long long size() const;
     void push_back(const T& element); //在后面增加一个元素
@@ -20,9 +32,8 @@ public:
     void clear(); //清空
     void reverse(unsigned long long _capacity); //改变容量
     T & at(unsigned long long index); //下标
-    T* begin() const; //返回第一个元素的指针
-    T* end() const; //返回最后一个元素的指针
-    typedef T* iterator;//迭代器
+    iterator begin() const; //返回第一个元素的指针
+    iterator end() const; //返回最后一个元素的指针
 
     MyVector & operator=(const MyVector<T> &other); //赋值
     MyVector operator+(const MyVector<T> &other); //加法
@@ -31,12 +42,9 @@ public:
     MyVector operator!=(const MyVector<T> &other); //不等于
     T & operator[](unsigned long long index); //下标
 
+    typedef iterator iterator;
     friend std::ostream operator<<(std::ostream & out , const MyVector<T> & Vector);
     friend std::istream operator>>(std::istream & in , const MyVector<T> & Vector);
-private:
-    T *data; //数据
-    unsigned long long len; //当前长度
-    unsigned long long capacity; //容量
 };
 
 #endif //OOPCES_VECTOR_MYVECTOR_H
