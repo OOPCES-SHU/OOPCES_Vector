@@ -31,7 +31,7 @@ public:
     void insert(unsigned long long index, const T& element); //在index处插入一个元素
     void erase(unsigned long long index); //删除index处的元素
     bool clear(); //清空
-    void reverse(unsigned long long _capacity); //改变容量
+    void reserve(unsigned long long _capacity); //改变容量
     T & at(unsigned long long index); //下标
     iterator begin() const; //返回第一个元素的指针
     iterator end() const; //返回最后一个元素的指针
@@ -83,10 +83,156 @@ MyVector<T>::MyVector(int size , const T& initial) //构造函数,将size个位�
 }
 
 template<typename T>
-MyVector<T>::~MyVector() { 
-    if(data!= nullptr){
+MyVector<T>::~MyVector()
+{
+    if(data!= nullptr)
+    {
         delete[] data; 
         data = nullptr;
+    }
+}
+
+template<typename T>
+void MyVector<T>::push_back(const T &element)
+{
+    len++;
+    if(len >= capacity)
+    {
+        capacity = len + 5;
+        reserve(capacity);
+    }
+    data[len-1] = element;
+}
+
+template<typename T>
+void MyVector<T>::pop_back()
+{
+    len--;
+    if (len < capacity / 2)
+    {
+        unsigned long long newCapacity = capacity / 2;
+        T* newData = new T[newCapacity];
+        for (unsigned long long i = 0; i < len; i++)
+        {
+            newData[i] = data[i];
+        }
+        delete[] data; // 重新分配内存防止出错
+        capacity = newCapacity;
+        data = newData;
+    }
+}
+
+template<typename T>
+void MyVector<T>::insert(unsigned long long index, const T& element)
+{
+    try
+    {
+        if (index < 0 || index > len)
+        { throw "error index!\n"; }
+    }catch(const char *error)
+    {
+        std::cerr << error;
+        return;
+    }
+
+    len++;
+    capacity = len + 5;
+    MyVector<T> temp(this->data);
+    delete[] data;
+    data = new T[capacity];
+
+    if (len >= capacity)
+    {
+        capacity = len + 5;
+        reserve(capacity);
+    }
+
+    for (unsigned long long i = 0; i < index; i++)
+    {
+        data[i] = temp.data[i];
+    }
+    data[index] = element;
+    for (unsigned long long i = index + 1; i < len; i++)
+    {
+        data[i] = temp.data[i - 1];
+    }
+}
+
+template<typename T>
+void MyVector<T>::erase(unsigned long long index)
+{
+    try
+    {
+        if (index < 0 || index > len)
+        { throw "error index!\n"; }
+    }catch(const char *error)
+    {
+        std::cerr << error;
+        return;
+    }
+
+    len--;
+    capacity = len + 5;
+    MyVector<T> temp(this->data);
+    delete[] data;
+    data = new T[capacity];
+
+    if (len >= capacity)
+    {
+        capacity = len + 5;
+        reserve(capacity);
+    }
+
+    for (unsigned long long i = 0; i < index; i++)
+    {
+        data[i] = temp.data[i];
+    }
+    for (unsigned long long i = index; i < len; i++)
+    {
+        data[i] = temp.data[i + 1];
+    }
+}
+
+template<typename T>
+bool MyVector<T>::clear()
+{
+    if(data!= nullptr)
+    {
+        delete[] data;
+        data = nullptr;
+        len = 0;
+        capacity = 0;
+        return true;
+    }
+    return false;
+}
+
+template<typename T>
+void MyVector<T>::reserve(unsigned long long _capacity)
+{
+    if(_capacity >= capacity)
+    {
+        T* newData = new T[_capacity];
+        for(unsigned long long i=0 ; i<len ; i++)
+        {
+            newData[i] = data[i];
+        }
+        delete[] data;
+        data = newData;
+        capacity = _capacity;
+    }
+}
+
+template<typename T>
+T & MyVector<T>::at(unsigned long long index)
+{
+    if(index >= 0 && index < capacity)
+    {
+        return data[index];
+    }
+    else
+    {
+        throw -1;
     }
 }
 
