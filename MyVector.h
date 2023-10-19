@@ -39,8 +39,8 @@ public:
     MyVector & operator=(const MyVector<T> &other); //赋值
     MyVector operator+(const MyVector<T> &other); //加法
     MyVector operator+=(const MyVector<T> &other); //加法
-    MyVector operator==(const MyVector<T> &other); //等于
-    MyVector operator!=(const MyVector<T> &other); //不等于
+    bool operator==(const MyVector<T> &other) const;
+    bool operator!=(const MyVector<T> &other) const; //不等于
     T & operator[](unsigned long long index); //下标
 
     typedef iterator iterator;
@@ -236,4 +236,98 @@ T & MyVector<T>::at(unsigned long long index)
     }
 }
 
+//********************************************************
+//*
+//*   这里   iterator begin() const; //返回第一个元素的指针
+//*          iterator end() const; //返回最后一个元素的指针
+//*
+//********************************************************
+
+template<typename T>
+MyVector<T>& MyVector<T>::operator=(const MyVector<T> &other)//赋值
+{
+    if (this == &other) {
+        return *this;
+    }
+    delete[] data;
+    len = other.len;
+    capacity = other.capacity;
+    data = new T[capacity];
+    for (unsigned long long i = 0; i < len; ++i) {
+        data[i] = other.data[i];
+    }
+    return *this;
+}
+
+template<typename T>
+MyVector<T> MyVector<T>::operator+(const MyVector<T> &other) //加法
+{
+    MyVector<T> result;
+    result.len=this->len+other.len;
+    result.capacity=this->capacity+other.capacity;
+    result.data = new T[result.capacity];
+    unsigned long long i = 0;
+    for(i=0;i<this->len;i++)
+    {
+        result.data[i]=this->data[i];
+    }
+    for(i=this->len;i<result.len;i++)
+    {
+        result.data[i]=other.data[i];
+    }
+    return result;
+}
+
+template<typename T>
+MyVector<T> MyVector<T>::operator+=(const MyVector<T> &other) {
+    // 确保当前对象有足够的容量来容纳另一个对象的元素
+    if (len + other.len > capacity) {
+        // 如果容量不够，扩展容量
+        reserve(len + other.len);
+    }
+
+    // 复制另一个对象的元素到当前对象的末尾
+    for (unsigned long long i = 0; i < other.len; ++i) {
+        data[len + i] = other.data[i];
+    }
+
+    // 更新当前对象的长度
+    len += other.len;
+
+    return *this;
+}
+
+template<typename T>
+bool MyVector<T>::operator==(const MyVector<T> &other) const {
+    if (len != other.len) {
+        return false;
+    }
+    for (unsigned long long i = 0; i < len; ++i) {
+        if (data[i] != other.data[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template<typename T>
+bool MyVector<T>::operator!=(const MyVector<T> &other) const {
+    if (len != other.len) {
+        return true;
+    }
+    for (unsigned long long i = 0; i < len; ++i) {
+        if (data[i] != other.data[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+template<typename T>
+T&  MyVector<T>::operator[](unsigned long long index)
+{
+    T result;
+    result=this->data[index];
+    return result;
+}
 #endif //OOPCES_VECTOR_MYVECTOR_H
