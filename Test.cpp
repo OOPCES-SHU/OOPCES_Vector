@@ -86,15 +86,18 @@ static void TestShow()
     std::cout << "\n";
 
     color(Seed());
-    std::cout << "循环输出VecINTDim3:\n";
+    std::cout << "循环输出VecINTDim3 调用重载operator<<:\n";
     for(auto it:{0,1,2})
-        VecINTDim3[it].print();
+        std::cout << VecINTDim3[it];
     std::cout << "\n";
 
     color(Seed());
-    std::cout << "循环输出VecChDim7:\n";
-    for(auto it:{0,1,2,3,4,5,6})
+    std::cout << "循环输出VecChDim7{0,1,2,3} 调用 .print():\n";
+    for(auto it:{0,1,2,3})
         VecChDim7[it].print();
+    std::cout << "\n循环输出VecChDim7{4,5,6} 调用重载operator<<:\n";
+    for(auto it:{4,5,6})
+        std::cout << VecChDim7[it];
     std::cout << "\n";
 }
 
