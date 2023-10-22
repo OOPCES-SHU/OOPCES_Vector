@@ -1,9 +1,11 @@
 //MyVector.h
 #ifndef OOPCES_VECTOR_MYVECTOR_H
 #define OOPCES_VECTOR_MYVECTOR_H
-#include <iostream>
+#include <bits/stdc++.h>
 #include <format>
 #include <initializer_list>
+
+
 
 namespace My {
     template<typename T>
@@ -26,18 +28,30 @@ namespace My {
 
         MyVector(); //默认构造函数
         MyVector(int _size);
-
         MyVector(const MyVector<T> &copy); //拷贝构造函数
         MyVector(int size, const T &initial); //构造函数
-        MyVector(const T *other); //可用数组做初始化
+
+        //不知道为什么非得写在这里，写在外面就报错
+        template<size_t size>
+        MyVector(const T (&arr)[size]) //可用数组做初始化
+        :data(nullptr), len(0), capacity(0)
+        {
+            len = getLength(arr);
+            capacity = len + 5;
+            data = new T[capacity];
+            for (unsigned long long i = 0; i < len; ++i) {
+                data[i] = arr[i];
+            }
+        }
+
         MyVector(const std::initializer_list<T> &list); //初始化列表
         ~MyVector();  //析构函数
         unsigned long long size() const;
 
         void push_back(const T &element); //在后面增加一个元素
         void pop_back(); // 删除最后一个元素，减少容量
-        void insert(unsigned long long index, const T &element); //在index处插入一个元素
-        void erase(unsigned long long index); //删除index处的元素
+        void insert(long long index, const T &element); //在index处插入一个元素
+        void erase(long long index); //删除index处的元素
         bool clear(); //清空
         void reserve(unsigned long long _capacity); //改变容量
         void reverse(); //反转
@@ -56,6 +70,11 @@ namespace My {
         bool operator!=(const MyVector<T> &other) const; //不等于
 
         T &operator[](unsigned long long index); //下标
+    private:
+        template<size_t size>
+        size_t getLength(const T (&var)[size]) {
+            return size;
+        }
     };
 
     template<typename T>
@@ -88,20 +107,19 @@ namespace My {
         }
     }
 
-    template<typename T>
-    MyVector<T>::MyVector(const T *other)
-            :data(nullptr), len(0), capacity(0) {
-        unsigned long long other_len{0};
-        while (other[other_len] != '\0') {
-            other_len++;
-        }
-        len = other_len;
-        capacity = other_len + 5;
+
+    /*template<typename T>
+    template<size_t size>
+    MyVector<T>::MyVector(const T (&arr)[size]) //可用数组做初始化
+    :data(nullptr), len(0), capacity(0)
+    {
+        len = getLength(arr);
+        capacity = len + 5;
         data = new T[capacity];
-        for (unsigned long long i = 0; i < other_len; ++i) {
-            data[i] = other[i];
+        for (unsigned long long i = 0; i < len; ++i) {
+            data[i] = arr[i];
         }
-    }
+    }*/
 
     template<typename T>
     MyVector<T>::MyVector(const std::initializer_list<T> &list)
@@ -158,7 +176,7 @@ namespace My {
         for (unsigned long long i = 0; i < len;) {
             std::cout << data[i++] << " ";
         }
-        std::cout << '\n';
+        std::cout << std::format("[ size:{},capacity:{} ]\n", len, capacity);
     }
 
     template<typename T>
@@ -175,46 +193,45 @@ namespace My {
     }
 
     template<typename T>
-    void MyVector<T>::insert(unsigned long long index, const T &element) {
+    void MyVector<T>::insert(long long index, const T &element) {
         if (index < 0 || index > len) {
-            throw -1;
-            return;
+            throw std::format("Index out of range MyVector<{}>::insert({},{})\n",typeid(T).name(),index,element);
         }
-        len++;
-        if (len >= capacity)
+        if (len >= capacity) {
             capacity = len + 5;
-        MyVector<T> temp(this->data); // 拷贝当前对象
+        }
+        MyVector<T> temp(*this); // 拷贝当前对象
+        len++;
         delete[] data;
         data = nullptr;
         data = new T[capacity];
 
-        for (unsigned long long i = 0; i < index; i++) {
+        for (long long i = 0; i < index; i++) {
             data[i] = temp.data[i];
         }
         data[index] = element;
-        for (unsigned long long i = index + 1; i < len; i++) {
+        for (long long i = index + 1; i < len; i++) {
             data[i] = temp.data[i - 1];
         }
     }
 
     template<typename T>
-    void MyVector<T>::erase(unsigned long long index) //容量不变
+    void MyVector<T>::erase(long long index) //容量不变
     {
         if (index < 0 || index > len) {
-            throw -1;
-            return;
+            throw std::format("Index out of range MyVector<{}>::erase({})\n",typeid(T).name(),index);
         }
+        MyVector<T> temp(*this);
         len--;
-        MyVector<T> temp(this->data);
         delete[] data;
         data = nullptr;
         data = new T[capacity];
 
-        for (unsigned long long i = 0; i < index; i++) {
-            data[i] = temp.data[i];
-        }
-        for (unsigned long long i = index; i < len; i++) {
-            data[i] = temp.data[i + 1];
+        for (long long i = 0; i < temp.size(); i++) {
+            if(i < index)
+                data[i] = temp.data[i];
+            else if(i >= index)
+                data[i] = temp.data[i + 1];
         }
     }
 
@@ -252,7 +269,7 @@ namespace My {
         if (index >= 0 && index < capacity) {
             return data[index];
         } else {
-            throw "Index out of range MyVector<T>::at";
+            throw std::format("Index out of range MyVector<{}>::at\n",typeid(T).name());
         }
     }
 
@@ -387,4 +404,6 @@ namespace My {
         return out;
     }
 }
+
+
 #endif //OOPCES_VECTOR_MYVECTOR_H
