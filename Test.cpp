@@ -148,7 +148,46 @@ static void TestReverse()
 
 static void TestIterator()
 {
-    std::cout << "执行迭代器...\n";
+    color(15);
+    std::cout << "使用迭代器 My::MyVector<T>::iterator it\n";
+
+    color(10);
+    std::cout << "循环迭代输出VecD:\n"
+    << "采用迭代器后自增 it++: ";
+    color(3);
+    for(auto it=VecD.begin();it!=VecD.end();it++)
+    {
+        std::cout << *it << " ";
+    }
+    std::cout << "\n\n";
+
+    color(10);
+    std::cout << "循环迭代输出VecCh:\n"
+              << "采用迭代器前自减 --it:\n"
+              << "for(auto it=VecCh.end();it!=VecCh.begin();)\n"
+                 "{\n"
+                 "        std::cout << *(--it) << \" \";\n"
+                 "}\n";
+    color(3);
+    for(auto it=VecCh.end();it!=VecCh.begin();)
+    {
+        std::cout << *(--it) << " ";
+    }
+    std::cout << "\n\n";
+
+    color(10);
+    std::cout << "循环迭代输出VecCh:\n"
+              << "采用迭代器后自减 it--:\n"
+              << "for(auto it=VecCh.end();it!=VecCh.begin();)\n"
+                 "{\n"
+                 "        std::cout << *(it--) << \" \";\n"
+                 "}\n";
+    color(3);
+    for(auto it=VecCh.end();it!=VecCh.begin();)
+    {
+        std::cout << *(it--) << " ";
+    }
+    std::cout << '\n';
 }
 
 static void TestException()
