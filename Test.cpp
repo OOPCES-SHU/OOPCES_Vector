@@ -68,15 +68,18 @@ static void TestAssign()
 static void TestShow()
 {
     color(15);
-    std::cout << "[执行输出]调用 .print()成员函数\n";
+    std::cout << "[执行输出]调用 .print()成员函数及重载operator[]\n";
 
     color(Seed());
-    std::cout << "输出VecD:\n";
+    std::cout << "输出VecD: 使用负数下标反向遍历\n"
+    << "逆向前";
     VecD.print();
+    for(auto i:{-1,-2,-3,-4})
+        std::cout << VecD[i] << ' ';
     std::cout << "\n";
 
     color(Seed());
-    std::cout << "输出VecString:\n";
+    std::cout << "逆向输出VecString:\n";
     VecString.print();
     std::cout << "\n";
 
@@ -92,7 +95,7 @@ static void TestShow()
     std::cout << "\n";
 
     color(Seed());
-    std::cout << "循环输出VecChDim7{0,1,2,3} 调用 .print():\n";
+    std::cout << "逆向循环输出VecChDim7{0,1,2,3} 调用 .print():\n";
     for(auto it:{0,1,2,3})
         VecChDim7[it].print();
     std::cout << "\n循环输出VecChDim7{4,5,6} 调用重载operator<<:\n";

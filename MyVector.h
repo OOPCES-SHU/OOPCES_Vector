@@ -5,27 +5,39 @@
 #include <format>
 #include <initializer_list>
 
-
-
 namespace My {
     template<typename T>
     class MyVector {
     private:
         T *data; //数据
         unsigned long long len; //当前长度
+
         unsigned long long capacity; //容量
-        class iterator {
-            /*
-             *  写 迭代器 写 迭代器
-             *  写 迭代器 写 迭代器
-             *  写 迭代器 写 迭代器
-             *  写 迭代器 写 迭代器
-             * */
+
+        class MyIterator {
+        private:
+            T *Iterator;
+        public:
+            MyIterator(T *mydata);
+            ~MyIterator();
+            //后自减
+            MyIterator operator--(int);
+            const MyIterator& operator--();
+            //后自增
+            MyIterator operator++(int);
+            const MyIterator& operator++();
+            bool operator==(const MyIterator& other) const;
+            bool operator!=(const MyIterator& other) const;
+            bool operator<=(const MyIterator& other) const;
+            bool operator<(const MyIterator& other) const;
+            MyIterator operator+(const int &a);
+            const MyIterator& operator+=(const int &a);
+            MyIterator operator-(const int &a);
+            const MyIterator& operator-=(const int &a);
+            T& operator*();
         };
-
     public:
-        typedef iterator iterator;
-
+        typedef MyIterator iterator;
         MyVector(); //默认构造函数
         MyVector(int _size);
         MyVector(const MyVector<T> &copy); //拷贝构造函数
@@ -56,10 +68,10 @@ namespace My {
         void reserve(unsigned long long _capacity); //改变容量
         void reverse(); //反转
         void print(); //输出
-        T &at(unsigned long long index); //下标
+        T &at(long long index); //下标
 
-        iterator begin() const; //返回第一个元素的指针
-        iterator end() const; //返回最后一个元素的指针
+        MyIterator begin() const; //返回第一个元素的指针
+        MyIterator end() const; //返回最后一个元素的指针
 
         MyVector &operator=(const MyVector<T> &other); //赋值
         MyVector &operator=(const T *other); //可用数组
@@ -69,7 +81,7 @@ namespace My {
 
         bool operator!=(const MyVector<T> &other) const; //不等于
 
-        T &operator[](unsigned long long index); //下标
+        T &operator[](long long index); //下标
     private:
         template<size_t size>
         size_t getLength(const T (&var)[size]) {
@@ -173,7 +185,7 @@ namespace My {
     template<typename T>
     void MyVector<T>::print() {
         std::cout << std::format("namepace[My]::vector<{}>: ", typeid(T).name());
-        for (unsigned long long i = 0; i < len;) {
+        for (long long i = 0; i < len;) {
             std::cout << data[i++] << " ";
         }
         std::cout << std::format("[ size:{},capacity:{} ]\n", len, capacity);
@@ -265,10 +277,15 @@ namespace My {
     }
 
     template<typename T>
-    T &MyVector<T>::at(unsigned long long index) {
+    T &MyVector<T>::at(long long index) {
         if (index >= 0 && index < capacity) {
             return data[index];
-        } else {
+        }
+        else if(index < 0 && index + len >= 0)
+        {
+            return data[index + len];
+        }
+        else {
             throw std::format("Index out of range MyVector<{}>::at\n",typeid(T).name());
         }
     }
@@ -382,7 +399,9 @@ namespace My {
     }
 
     template<typename T>
-    T &MyVector<T>::operator[](unsigned long long index) {
+    T &MyVector<T>::operator[](long long index) {
+        if(index < 0)
+            return data[index + len];
         return data[index];  //直接返回引用，不做异常处理
     }
 
@@ -402,6 +421,105 @@ namespace My {
         }
         out << '\n';
         return out;
+    }
+
+    template<typename T>
+    MyVector<T>::MyIterator::MyIterator(T *mydata)
+            :Iterator(mydata){}
+
+    template<typename T>
+    MyVector<T>::MyIterator::~MyIterator()
+    {
+        if(Iterator != nullptr)
+        {
+            Iterator = nullptr;
+        }
+    }
+
+    template<typename T>
+    MyVector<T>::MyIterator MyVector<T>::MyIterator::operator++(int) {
+        Iterator++;
+        return *this;
+    }
+
+    template<typename T>
+    const MyVector<T>::MyIterator& MyVector<T>::MyIterator::operator++() {
+        Iterator++;
+        return *this;
+    }
+
+    template<typename T>
+    MyVector<T>::MyIterator MyVector<T>::MyIterator::operator--(int) {
+        Iterator--;
+        return *this;
+    }
+
+    template<typename T>
+    const MyVector<T>::MyIterator& MyVector<T>::MyIterator::operator--() {
+        Iterator--;
+        return *this;
+    }
+
+    template<typename T>
+    bool MyVector<T>::MyIterator::operator==(const MyVector::MyIterator &other) const {
+        return Iterator==other.Iterator;
+    }
+
+    template<typename T>
+    bool MyVector<T>::MyIterator::operator!=(const MyVector::MyIterator &other) const {
+        return Iterator!=other.Iterator;
+    }
+
+    template<typename T>
+    bool MyVector<T>::MyIterator::operator<=(const MyVector::MyIterator &other) const {
+        return Iterator<=other.Iterator;
+    }
+
+    template<typename T>
+    bool MyVector<T>::MyIterator::operator<(const MyVector::MyIterator &other) const {
+        return Iterator<other.Iterator;
+    }
+
+    template<typename T>
+    T& MyVector<T>::MyIterator::operator*() {
+        return *Iterator;
+    }
+
+    template<typename T>
+    MyVector<T>::iterator MyVector<T>::begin() const{
+        MyVector<T>::MyIterator it=MyIterator(data);
+        return it;
+    }
+
+    template<typename T>
+    MyVector<T>::MyIterator MyVector<T>::end() const{
+        MyVector<T>::MyIterator it=MyIterator(data+len-1);
+        return it;
+    }
+
+    template<typename T>
+    MyVector<T>::MyIterator MyVector<T>::MyIterator::operator+(const int &a) {
+        (*this).Iterator = (*this).Iterator + a;
+        return *this;
+    }
+
+    template<typename T>
+    const MyVector<T>::MyIterator &MyVector<T>::MyIterator::operator+=(const int &a) {
+            (*this).Iterator = (*this).Iterator + a;
+        return *this;
+    }
+
+    template<typename T>
+    MyVector<T>::MyIterator MyVector<T>::MyIterator::operator-(const int &a) {
+        (*this).Iterator = (*this).Iterator - a;
+        return *this;
+    }
+
+    template<typename T>
+    const MyVector<T>::MyIterator & MyVector<T>::MyIterator::operator-=(const int &a)
+    {
+            (*this).Iterator = (*this).Iterator - a;
+        return *this;
     }
 }
 
