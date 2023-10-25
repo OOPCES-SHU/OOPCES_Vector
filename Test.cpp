@@ -336,12 +336,12 @@ static void TestInsert()
     {
         VecChDim7[it].print();
     }
-    std::cout << "[插入位置VecChDim7[0] index=0 插入元素ch 's']\n"
+    std::cout << "[插入位置VecChDim7[0] index=-20 插入元素ch 's']\n"
               << "[插入位置VecChDim7[3] index=0 插入元素ch 'Q']\n"
               << "[插入位置VecChDim7[6] index=100 插入元素ch 'M']\n";
     try {
         std::cout << "尝试插入判断异常...\n";
-        VecChDim7[0].insert(0, 's');
+        VecChDim7[0].insert(-20, 's');
     }catch (const std::string & str){
         color(12);
         std::cout << str << '\n';
@@ -375,10 +375,10 @@ static void TestErase()
     std::cout << "删除并输出VecD:\n"
               << "删除前:";
     VecD.print();
-    std::cout << "[删除位置index=1]\n";
+    std::cout << "[删除位置index=-30]\n";
     try {
         std::cout << "尝试删除判断异常...\n";
-        VecD.erase(1);
+        VecD.erase(-30);
     }catch (const std::string & str){
         color(12);
         std::cout << str << '\n';
@@ -437,7 +437,7 @@ static void TestErase()
     }
     std::cout << "[删除位置VecINTDim3[0] index=9 ]\n"
               << "[删除位置VecINTDim3[1] index=1 ]\n"
-              << "[删除位置VecINTDim3[2] index=-1 ]\n";
+              << "[删除位置VecINTDim3[2] index=-2 ]\n";
     try {
         std::cout << "尝试删除判断异常...\n";
         VecINTDim3[0].erase(9);
@@ -452,7 +452,7 @@ static void TestErase()
         std::cout << str << '\n';
     }
     try {
-        VecINTDim3[2].erase(-1);
+        VecINTDim3[2].erase(-2);
     }catch (const std::string & str){
         color(12);
         std::cout << str << '\n';
@@ -476,7 +476,7 @@ static void TestErase()
     }
     std::cout << "[删除位置VecChDim7[0] index=1 ]\n"
               << "[删除位置VecChDim7[3] index=2 ]\n"
-              << "[删除位置VecChDim7[6] index=9 ]\n";
+              << "[删除位置VecChDim7[6] index=-5 ]\n";
     try {
         std::cout << "尝试插入判断异常...\n";
         VecChDim7[0].erase(1);
@@ -491,7 +491,7 @@ static void TestErase()
         std::cout << str << '\n';
     }
     try {
-        VecChDim7[6].erase(9);
+        VecChDim7[6].erase(-5);
     }catch (const std::string & str){
         color(12);
         std::cout << str << '\n';
@@ -602,7 +602,7 @@ static void TestPopBack()
     VecString.print();
     color(15);
     std::cout << "[循环弹出所有元素]\n";
-    int size = VecString.size();
+    long long  size = VecString.size();
     for(auto it=0;it<size;it++)
     {
         VecString.pop_back();

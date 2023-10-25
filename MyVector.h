@@ -10,9 +10,8 @@ namespace My {
     class MyVector {
     private:
         T *data; //数据
-        unsigned long long len; //当前长度
-
-        unsigned long long capacity; //容量
+        long long len; //当前长度
+        long long capacity; //容量
 
         class MyIterator {
         private:
@@ -22,14 +21,15 @@ namespace My {
             ~MyIterator();
             //后自减
             MyIterator operator--(int);
-            const MyIterator& operator--();
+            MyIterator& operator--();
             //后自增
             MyIterator operator++(int);
-            const MyIterator& operator++();
+            MyIterator& operator++();
             bool operator==(const MyIterator& other) const;
             bool operator!=(const MyIterator& other) const;
             bool operator<=(const MyIterator& other) const;
             bool operator<(const MyIterator& other) const;
+            MyIterator& operator=(const MyIterator& other);
             MyIterator operator+(const int &a);
             const MyIterator& operator+=(const int &a);
             MyIterator operator-(const int &a);
@@ -51,21 +51,21 @@ namespace My {
             len = getLength(arr);
             capacity = len + 5;
             data = new T[capacity];
-            for (unsigned long long i = 0; i < len; ++i) {
+            for ( long long i = 0; i < len; ++i) {
                 data[i] = arr[i];
             }
         }
 
         MyVector(const std::initializer_list<T> &list); //初始化列表
         ~MyVector();  //析构函数
-        unsigned long long size() const;
+        long long size() const;
 
         void push_back(const T &element); //在后面增加一个元素
         void pop_back(); // 删除最后一个元素，减少容量
         void insert(long long index, const T &element); //在index处插入一个元素
         void erase(long long index); //删除index处的元素
         bool clear(); //清空
-        void reserve(unsigned long long _capacity); //改变容量
+        void reserve( long long _capacity); //改变容量
         void reverse(); //反转
         void print(); //输出
         T &at(long long index); //下标
@@ -74,7 +74,17 @@ namespace My {
         MyIterator end() const; //返回最后一个元素的指针
 
         MyVector &operator=(const MyVector<T> &other); //赋值
-        MyVector &operator=(const T *other); //可用数组
+
+        template<size_t size>
+        MyVector &operator=(const T (&arr)[size]) //可用数组
+        {
+            len = getLength(arr);
+            capacity = len + 5;
+            data = new T[capacity];
+            for ( long long i = 0; i < len; ++i) {
+                data[i] = arr[i];
+            }
+        }
         MyVector operator+(const MyVector<T> &other); //加法
         MyVector operator+=(const MyVector<T> &other); //加法
         bool operator==(const MyVector<T> &other) const;
@@ -119,20 +129,6 @@ namespace My {
         }
     }
 
-
-    /*template<typename T>
-    template<size_t size>
-    MyVector<T>::MyVector(const T (&arr)[size]) //可用数组做初始化
-    :data(nullptr), len(0), capacity(0)
-    {
-        len = getLength(arr);
-        capacity = len + 5;
-        data = new T[capacity];
-        for (unsigned long long i = 0; i < len; ++i) {
-            data[i] = arr[i];
-        }
-    }*/
-
     template<typename T>
     MyVector<T>::MyVector(const std::initializer_list<T> &list)
     :data(new T[list.size() + 5]),len(0),capacity(list.size() + 5)
@@ -143,8 +139,6 @@ namespace My {
         }
     }
 
-
-
     template<typename T>
     MyVector<T>::~MyVector() {
         if (data != nullptr) {
@@ -154,7 +148,7 @@ namespace My {
     }
 
     template<typename T>
-    unsigned long long MyVector<T>::size() const {
+     long long MyVector<T>::size() const {
         return len;
     }
 
@@ -171,8 +165,8 @@ namespace My {
     template<typename T>
     void MyVector<T>::reverse() //反转
     {
-        unsigned long long start{0};
-        unsigned long long end{len - 1};
+         long long start{0};
+         long long end{len - 1};
         while (start < end) {
             T temp = data[start];
             data[start] = data[end];
@@ -194,19 +188,29 @@ namespace My {
     template<typename T>
     void MyVector<T>::pop_back() // 删除最后一个元素，但容量不变
     {
-        len--;
-        T *newData = new T[capacity];
-        for (unsigned long long i = 0; i < len; i++) {
-            newData[i] = data[i];
+        if(len > 0) {
+            len--;
+            T *newData = new T[capacity];
+            for (long long i = 0; i < len; i++) {
+                newData[i] = data[i];
+            }
+            delete[] data; // 重新分配内存防止出错
+            data = nullptr; // 防止出错
+            data = newData;
         }
-        delete[] data; // 重新分配内存防止出错
-        data = nullptr; // 防止出错
-        data = newData;
     }
 
     template<typename T>
     void MyVector<T>::insert(long long index, const T &element) {
-        if (index < 0 || index > len) {
+        if(index < 0 && index + len < 0)
+        {
+            throw std::format("Index out of range MyVector<{}>::insert({},{})\n",typeid(T).name(),index,element);
+        }
+        else if(index < 0 && index + len >= 0)
+        {
+            index = index + len;
+        }
+        else if (index > len) {
             throw std::format("Index out of range MyVector<{}>::insert({},{})\n",typeid(T).name(),index,element);
         }
         if (len >= capacity) {
@@ -217,7 +221,6 @@ namespace My {
         delete[] data;
         data = nullptr;
         data = new T[capacity];
-
         for (long long i = 0; i < index; i++) {
             data[i] = temp.data[i];
         }
@@ -230,7 +233,15 @@ namespace My {
     template<typename T>
     void MyVector<T>::erase(long long index) //容量不变
     {
-        if (index < 0 || index > len) {
+        if(index < 0 && index + len < 0)
+        {
+            throw std::format("Index out of range MyVector<{}>::erase({})\n",typeid(T).name(),index);
+        }
+        else if(index < 0 && index + len >= 0)
+        {
+            index = index + len;
+        }
+        else if (index > len) {
             throw std::format("Index out of range MyVector<{}>::erase({})\n",typeid(T).name(),index);
         }
         MyVector<T> temp(*this);
@@ -238,13 +249,13 @@ namespace My {
         delete[] data;
         data = nullptr;
         data = new T[capacity];
-
         for (long long i = 0; i < temp.size(); i++) {
             if(i < index)
                 data[i] = temp.data[i];
             else if(i >= index)
                 data[i] = temp.data[i + 1];
         }
+
     }
 
     template<typename T>
@@ -262,11 +273,11 @@ namespace My {
     }
 
     template<typename T>
-    void MyVector<T>::reserve(unsigned long long _capacity) //改变容量
+    void MyVector<T>::reserve( long long _capacity) //改变容量
     {
         if (_capacity > capacity) {
             T *newData = new T[_capacity];
-            for (unsigned long long i = 0; i < len; i++) {
+            for ( long long i = 0; i < len; i++) {
                 newData[i] = data[i];
             }
             delete[] data;
@@ -290,13 +301,6 @@ namespace My {
         }
     }
 
-//********************************************************
-//*
-//*   这里   iterator begin() const; //返回第一个元素的指针
-//*          iterator end() const; //返回最后一个元素的指针
-//*
-//********************************************************
-
     template<typename T>
     MyVector<T> &MyVector<T>::operator=(const MyVector<T> &other)//赋值
     {
@@ -308,27 +312,27 @@ namespace My {
             len = other.len;
             capacity = other.capacity;
             data = new T[capacity];
-            for (unsigned long long i = 0; i < len; ++i) {
+            for ( long long i = 0; i < len; ++i) {
                 data[i] = other.data[i];
             }
             return *this;
         }
     }
 
-    template<typename T>
-    MyVector<T> &MyVector<T>::operator=(const T *other) {
-        unsigned long long other_len = sizeof(other) / sizeof(other[0]);
-        if (data != nullptr) {
-            len = other_len;
-            capacity = other_len + 5;
-            delete[] data;
-            data = nullptr;
-            data = new T[capacity];
-            for (unsigned long long i = 0; i < other_len; ++i) {
-                data[i] = other[i];
-            }
-        }
-    }
+//    template<typename T>
+//    MyVector<T> &MyVector<T>::operator=(const T *other) {
+//         long long other_len = sizeof(other) / sizeof(other[0]);
+//        if (data != nullptr) {
+//            len = other_len;
+//            capacity = other_len + 5;
+//            delete[] data;
+//            data = nullptr;
+//            data = new T[capacity];
+//            for ( long long i = 0; i < other_len; ++i) {
+//                data[i] = other[i];
+//            }
+//        }
+//    }
 
     template<typename T>
     MyVector<T> MyVector<T>::operator+(const MyVector<T> &other) //加法
@@ -340,7 +344,7 @@ namespace My {
             result.len = this->len + other.len;
             result.capacity = this->capacity + other.capacity;
             result.data = new T[result.capacity];
-            unsigned long long i = 0;
+             long long i = 0;
             for (i = 0; i < this->len; i++) {
                 result.data[i] = this->data[i];
             }
@@ -361,7 +365,7 @@ namespace My {
             }
 
             // 复制另一个对象的元素到当前对象的末尾
-            for (unsigned long long i = 0; i < other.len; ++i) {
+            for ( long long i = 0; i < other.len; ++i) {
                 data[len + i] = other.data[i];
             }
             // 更新当前对象的长度
@@ -377,7 +381,7 @@ namespace My {
         if (len != other.len) {
             return false;
         }
-        for (unsigned long long i = 0; i < len; ++i) {
+        for ( long long i = 0; i < len; ++i) {
             if (data[i] != other.data[i]) {
                 return false;
             }
@@ -390,7 +394,7 @@ namespace My {
         if (len != other.len) {
             return true;
         }
-        for (unsigned long long i = 0; i < len; ++i) {
+        for ( long long i = 0; i < len; ++i) {
             if (data[i] != other.data[i]) {
                 return true;
             }
@@ -406,18 +410,10 @@ namespace My {
     }
 
     template<typename T>
-    std::istream &operator>>(std::istream &in, MyVector<T> &v) {
-        for (unsigned long long i = 0; i < v.size();) {
-            in >> v[i++];
-        }
-        return in;
-    }
-
-    template<typename T>
     std::ostream &operator<<(std::ostream &out, MyVector<T> &v) //输出
     {
-        for (unsigned long long i = 0; i < v.size();) {
-            out << v[i++] << " ";
+        for ( long long i = 0; i < v.size();i++) {
+            out << v[i] << " ";
         }
         out << '\n';
         return out;
@@ -438,25 +434,27 @@ namespace My {
 
     template<typename T>
     MyVector<T>::MyIterator MyVector<T>::MyIterator::operator++(int) {
-        Iterator++;
-        return *this;
+        MyVector<T>::MyIterator temp = *this;
+        ++Iterator;
+        return temp;
     }
 
     template<typename T>
-    const MyVector<T>::MyIterator& MyVector<T>::MyIterator::operator++() {
-        Iterator++;
+    MyVector<T>::MyIterator& MyVector<T>::MyIterator::operator++() {
+        *this+=1;
         return *this;
     }
 
     template<typename T>
     MyVector<T>::MyIterator MyVector<T>::MyIterator::operator--(int) {
-        Iterator--;
-        return *this;
+        MyVector<T>::MyIterator temp = *this;
+        --Iterator;
+        return temp;
     }
 
     template<typename T>
-    const MyVector<T>::MyIterator& MyVector<T>::MyIterator::operator--() {
-        Iterator--;
+    MyVector<T>::MyIterator& MyVector<T>::MyIterator::operator--() {
+        *this -= 1;
         return *this;
     }
 
@@ -486,15 +484,22 @@ namespace My {
     }
 
     template<typename T>
-    MyVector<T>::iterator MyVector<T>::begin() const{
+    MyVector<T>::MyIterator MyVector<T>::begin() const{
         MyVector<T>::MyIterator it=MyIterator(data);
         return it;
     }
 
     template<typename T>
     MyVector<T>::MyIterator MyVector<T>::end() const{
-        MyVector<T>::MyIterator it=MyIterator(data+len-1);
+        MyVector<T>::MyIterator it=MyIterator(data+len);
         return it;
+    }
+
+    template<typename T>
+    MyVector<T>::MyIterator& MyVector<T>::MyIterator::operator=(const MyVector<T>::MyIterator &other) {
+        if(Iterator != other.Iterator)
+            Iterator = other.Iterator;
+        return *this;
     }
 
     template<typename T>
