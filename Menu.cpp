@@ -71,35 +71,34 @@ void CursorPos1(int x) //光标覆盖菜单
     switch (x)
     {
         case 0:
-
-            std::cout << ("0) 退出程序");
+            std::cout << "0) 退出程序";
             break;
         case 1:
             std::cout << "1) 赋值测试";
             break;
         case 2:
-            std::cout << ("2) 输出测试");
+            std::cout << "2) 输出测试";
             break;
         case 3:
-            std::cout << ("3) 向量反转测试");
+            std::cout << "3) 向量反转测试";
             break;
         case 4:
-            std::cout << ("4) 迭代器测试");
+            std::cout << "4) 迭代器测试";
             break;
         case 5:
-            std::cout << ("5) 越界异常捕获测试");
+            std::cout << "5) 越界异常捕获测试";
             break;
         case 6:
-            std::cout << ("6) 插入测试");
+            std::cout << "6) 插入测试";
             break;
         case 7:
-            std::cout << ("7) 删除测试(erase & clear)");
+            std::cout << "7) 删除测试(erase & clear)";
             break;
         case 8:
-            std::cout << ("8) 追加测试(push_back)");
+            std::cout << "8) 追加测试(push_back)";
             break;
         case 9:
-            std::cout << ("9) 弹出测试(pop_back)");
+            std::cout << "9) 弹出测试(pop_back)";
             break;
     }
 }
@@ -112,7 +111,6 @@ deta：行数与菜单选项的差值。比如在main菜单中选项(0)在第2�
 upper, lower：选项的上下界
 (*P)(int)：函数指针，选择哪个覆盖菜单
 */
-
     void TestGate(int gate,bool &flag);
     char c1, c2;
     Gotoxy(0, line);
@@ -159,7 +157,7 @@ upper, lower：选项的上下界
 }
 
 void MenuStart() {
-    int n, line = 9; // 对应menu()的1）
+    int n, line = 2; // 对应menu()的1）
     char c1, c2;
     bool b;
     while (!flag) {
